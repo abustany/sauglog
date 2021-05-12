@@ -42,8 +42,8 @@ export default defineComponent({
   --color-accent: #ebe96c;
 
   --font-size-title: 22pt;
-  --font-size-base: 18pt;
-  --font-size-small: 14pt;
+  --font-size-base: 16pt;
+  --font-size-small: 12pt;
 }
 
 html {

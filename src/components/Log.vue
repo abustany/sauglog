@@ -4,10 +4,10 @@
       {{ entries.error }}
     </div>
     <div class="log-empty-state" v-if="entries.loading">
-      Loading…
+      {{ t('loading') }}
     </div>
     <div class="log-empty-state" v-if="!entries.loading && entries.entries.length === 0">
-      No entries yet
+      {{ t('no-entries') }}
     </div>
     <template v-for="(entry, index) in listData">
       <div class="log-entry" v-if="entry.type === 'entry'" :key="index">
@@ -36,9 +36,10 @@
 
 <script lang="ts">
 import { defineComponent, inject, Ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { formatDuration, formatTimestamp, formatSide } from '../format'
-import { Entry, EntryList } from '../log'
+import { Entry, EntryList, Side } from '../log'
 
 import AddButton from './AddButton.vue'
 
@@ -54,9 +55,19 @@ type ListItem = EntryItem | IntervalItem
 export default defineComponent({
   name: 'Log',
   setup() {
+    const { t } = useI18n({inheritLocale: true})
     const entries = inject('entries') as Ref<EntryList>
 
-    return { entries }
+    const tFormatDuration = (start: number, end: number) => formatDuration(t, start, end)
+    const tFormatSide = (side: Side) => formatSide(t, side)
+
+    return {
+      t,
+      formatDuration: tFormatDuration,
+      formatSide: tFormatSide,
+      formatTimestamp,
+      entries,
+    }
   },
   components: {
     AddButton
@@ -81,11 +92,6 @@ export default defineComponent({
       return items
     }
   },
-  methods: {
-    formatDuration,
-    formatSide,
-    formatTimestamp,
-  }
 })
 </script>
 
@@ -148,3 +154,16 @@ export default defineComponent({
   color: var(--color-bg-dark);
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "loading": "Loading…",
+    "no-entries": "No entries yet"
+  },
+  "fr": {
+    "loading": "Chargement…",
+    "no-entries": "Aucun enregistrement pour l'instant"
+  }
+}
+</i18n>

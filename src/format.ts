@@ -1,4 +1,7 @@
+import { Composer } from "vue-i18n"
 import { Side } from "./log"
+
+type T = Composer["t"]
 
 export function formatTimeNumber(val: number): string {
   return ('' + val).length === 1 ? ('0' + val) : '' + val
@@ -9,22 +12,18 @@ export function formatTimestamp(ts: number): string {
   return `${formatTimeNumber(d.getHours())}:${formatTimeNumber(d.getMinutes())}`
 }
 
-function plural(s: string, n: number): string {
-    return (n < 2) ? s : (s + 's')
-}
-
-export function formatDuration(startTimestamp: number, endTimestamp: number): string {
+export function formatDuration(t: T, startTimestamp: number, endTimestamp: number): string {
   const minutes = Math.floor(Math.abs(endTimestamp - startTimestamp) / 60)
 
   if (minutes < 60) {
-      return `${minutes} ${plural('minute', minutes)}`
+      return `${minutes} ${t('minute', minutes)}`
   }
 
   const hours = Math.floor(minutes / 60)
 
-  return `${hours} ${plural('hour', hours)} ${minutes - 60 * hours} ${plural('minute', minutes)}`
+  return `${hours} ${t('hour', hours)} ${minutes - 60 * hours} ${t('minute', minutes)}`
 }
 
-export function formatSide(s: Side): string {
-  return s.toLowerCase()
+export function formatSide(t: T, s: Side): string {
+  return t(s.toLowerCase())
 }

@@ -1,25 +1,25 @@
 <template>
   <div class="addentry">
     <div class="addentry-row">
-      <div class="addentry-row-left">Start:</div>
+      <div class="addentry-row-left">{{ t('start') }}:</div>
       <div class="addentry-row-right"><HourInput v-model="start" /></div>
     </div>
     <div class="addentry-row">
-      <div class="addentry-row-left">End:</div>
+      <div class="addentry-row-left">{{ t('end') }}:</div>
       <div class="addentry-row-right"><HourInput v-model="end" /></div>
     </div>
     <div class="addentry-row">
       <div class="addentry-row-center">
-        <label>Left <input type="radio" name="side" value="LEFT" v-model="side" /></label>
-        <label><input type="radio" name="side" value="RIGHT" v-model="side" /> Right</label>
+        <label>{{ t('left') }} <input type="radio" name="side" value="LEFT" v-model="side" /></label>
+        <label><input type="radio" name="side" value="RIGHT" v-model="side" /> {{ t('right') }}</label>
       </div>
     </div>
     <div class="addentry-row">
       <div class="addentry-row-left">
-        <input type="button" value="Cancel" @click="cancel"/>
+        <input type="button" :value="t('cancel')" @click="cancel"/>
       </div>
       <div class="addentry-row-right">
-        <input type="button" value="Save" @click="save"/>
+        <input type="button" :value="t('save')" @click="save"/>
       </div>
     </div>
   </div>
@@ -27,6 +27,7 @@
 
 <script lang="ts">
 import { defineComponent, inject } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { AddEntry, Side } from '../log'
 import HourInput from './HourInput.vue'
@@ -47,9 +48,10 @@ export default defineComponent({
     HourInput
   },
   setup() {
+    const { t } = useI18n({inheritLocale: true})
     const addEntry = inject('addEntry') as AddEntry
 
-    return { addEntry }
+    return { t, addEntry }
   },
   data() {
     return {
@@ -115,3 +117,24 @@ export default defineComponent({
   text-align: center;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "start": "Start",
+    "end": "End",
+    "left": "Left",
+    "right": "Right",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "fr": {
+    "start": "Début",
+    "end": "Fin",
+    "left": "Gauche",
+    "right": "Droite",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
+  }
+}
+</i18n>

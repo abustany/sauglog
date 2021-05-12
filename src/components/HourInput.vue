@@ -1,7 +1,7 @@
 <template>
   <div class="hourinput-modal" v-if="picking">
     <div class="hourinput-modal-title">
-      <h1>{{ picking }}</h1>
+      <h1>{{ t(picking) }}</h1>
       <input type="button" value="×" @click="closePicker" />
     </div>
     <div class="hourinput-modal-content">
@@ -23,6 +23,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { formatTimeNumber } from '../format'
 
@@ -34,6 +35,11 @@ interface Data {
 
 export default defineComponent({
   name: 'HourInput',
+  setup() {
+    const { t } = useI18n({inheritLocale: true})
+
+    return { t }
+  },
   props: {
     modelValue: {type: Date, required: true}
   },
@@ -157,3 +163,16 @@ export default defineComponent({
   background-color: var(--color-accent) !important
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "Hours": "Hours",
+    "Minutes": "Minutes"
+  },
+  "fr": {
+    "Hours": "Heure",
+    "Minutes": "Minute"
+  }
+}
+</i18n>
