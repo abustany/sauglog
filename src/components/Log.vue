@@ -12,7 +12,9 @@
     <template v-for="(entry, index) in listData">
       <div class="log-entry" v-if="entry.type === 'entry'" :key="index">
         <div class="log-entry-time">
-          {{ formatTimestamp(entry.startTimestamp) }}
+          <span>{{ formatTimestamp(entry.endTimestamp) }}</span>
+          <span class="log-entry-time-separator">|</span>
+          <span>{{ formatTimestamp(entry.startTimestamp) }}</span>
         </div>
         <div class="log-entry-data">
           <div>
@@ -139,6 +141,14 @@ export default defineComponent({
 
 .log-entry-time {
   flex: 0 0 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.log-entry-time-separator {
+  text-align: center;
+  font-size: .5rem;
+  color: var(--color-bg-dark);
 }
 
 .log-entry-data {
