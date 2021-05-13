@@ -1,5 +1,7 @@
 <template>
-  <TopBar />
+  <TopBar
+    :needsRefresh="needRefresh"
+    :updateServiceWorker="() => { updateServiceWorker(true) }" />
   <router-view class="app-content"></router-view>
 </template>
 
@@ -24,12 +26,8 @@ export default defineComponent({
     const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW()
 
     watchEffect(() => { if (offlineReady) console.log('App is ready to be run offline') })
-    watchEffect(() => {
-      if (needRefresh) {
-        console.log('A new version of the app is available, please refresh')
-        updateServiceWorker(false)
-      }
-     })
+
+     return { needRefresh, updateServiceWorker }
   },
 })
 </script>
