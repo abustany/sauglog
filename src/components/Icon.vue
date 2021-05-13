@@ -13,7 +13,7 @@ export default defineComponent({
     return { iconsUrl }
   },
   props: {
-      name: String,
+      name: {type: String, required: true},
   }
 })
 </script>
@@ -26,5 +26,7 @@ export default defineComponent({
   stroke-width: 0;
   stroke: currentColor;
   fill: currentColor;
+  position: relative;
+  top: .12rem;
 }
 </style>

@@ -165,7 +165,6 @@ export default defineComponent({
 }
 
 .log-entry-data-icon {
-  display: flex;
   margin-right: .25rem;
 }
 
