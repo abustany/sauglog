@@ -1,6 +1,9 @@
 {
     "hour": "hour | hours",
     "minute": "minute | minutes",
-    "left": "left",
-    "right": "right"
+    "side-left": "left",
+    "side-right": "right",
+    "position-cradle": "cradle",
+    "position-clutch": "clutch",
+    "position-lying": "lying"
 }

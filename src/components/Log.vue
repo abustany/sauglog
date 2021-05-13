@@ -14,11 +14,19 @@
         <div class="log-entry-time">
           {{ formatTimestamp(entry.startTimestamp) }}
         </div>
-        <div class="log-entry-duration">
-          {{ formatDuration(entry.startTimestamp, entry.endTimestamp) }}
-        </div>
-        <div class="log-entry-side">
-          {{ formatSide(entry.side) }}
+        <div class="log-entry-data">
+          <div>
+            <span class="log-entry-data-icon"><Icon name="clock"/></span>
+            <span>
+              {{ formatDuration(entry.startTimestamp, entry.endTimestamp) }}
+            </span>
+          </div>
+          <div>
+            <span class="log-entry-data-icon"><Icon name="info"/></span>
+            <span>
+              {{ formatSide(entry.side) + (entry.position ? `, ${formatPosition(entry.position)}` : '') }}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -38,10 +46,11 @@
 import { defineComponent, inject, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { formatDuration, formatTimestamp, formatSide } from '../format'
-import { Entry, EntryList, Side } from '../log'
+import { formatDuration, formatTimestamp, formatSide, formatPosition } from '../format'
+import { Entry, EntryList, Position, Side } from '../log'
 
 import AddButton from './AddButton.vue'
+import Icon from './Icon.vue'
 
 type EntryItem = Entry & { type: 'entry' }
 
@@ -60,17 +69,20 @@ export default defineComponent({
 
     const tFormatDuration = (start: number, end: number) => formatDuration(t, start, end)
     const tFormatSide = (side: Side) => formatSide(t, side)
+    const tFormatPosition = (p: Position) => formatPosition(t, p)
 
     return {
       t,
       formatDuration: tFormatDuration,
       formatSide: tFormatSide,
+      formatPosition: tFormatPosition,
       formatTimestamp,
       entries,
     }
   },
   components: {
-    AddButton
+    AddButton,
+    Icon,
   },
   computed: {
     listData(): ListItem[] {
@@ -129,14 +141,22 @@ export default defineComponent({
   flex: 0 0 2rem;
 }
 
-.log-entry-duration {
+.log-entry-data {
   flex: 1 1 auto;
   padding-left: .5rem;
+  display: flex;
+  flex-direction: column;
 }
 
-.log-entry-side {
-  flex: 0 0 auto;
-  text-align: right;
+.log-entry-data > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.log-entry-data-icon {
+  display: flex;
+  margin-right: .25rem;
 }
 
 .log-interval {

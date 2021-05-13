@@ -1,5 +1,5 @@
 import { Composer } from "vue-i18n"
-import { Side } from "./log"
+import { Position, Side } from "./log"
 
 type T = Composer["t"]
 
@@ -25,5 +25,9 @@ export function formatDuration(t: T, startTimestamp: number, endTimestamp: numbe
 }
 
 export function formatSide(t: T, s: Side): string {
-  return t(s.toLowerCase())
+  return t('side-' + s.toLowerCase())
+}
+
+export function formatPosition(t: T, p: Position): string {
+  return t('position-' + p.toLowerCase())
 }

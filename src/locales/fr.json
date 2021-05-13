@@ -1,6 +1,9 @@
 {
     "hour": "heure | heures",
     "minute": "minute | minutes",
-    "left": "gauche",
-    "right": "droite"
+    "side-left": "gauche",
+    "side-right": "droit",
+    "position-cradle": "berceau",
+    "position-clutch": "ballon de rugby",
+    "position-lying": "couchée"
 }

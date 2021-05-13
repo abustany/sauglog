@@ -1,5 +1,6 @@
 <template>
   <div class="addentry">
+    <h2>{{ t('time') }}</h2>
     <div class="addentry-row">
       <div class="addentry-row-left">{{ t('start') }}:</div>
       <div class="addentry-row-right"><HourInput v-model="start" /></div>
@@ -8,13 +9,18 @@
       <div class="addentry-row-left">{{ t('end') }}:</div>
       <div class="addentry-row-right"><HourInput v-model="end" /></div>
     </div>
+    <h2>{{ t('side') }}</h2>
     <div class="addentry-row">
       <div class="addentry-row-center">
-        <label>{{ t('left') }} <input type="radio" name="side" value="LEFT" v-model="side" /></label>
-        <label><input type="radio" name="side" value="RIGHT" v-model="side" /> {{ t('right') }}</label>
+        <label>{{ t('side-left') }} <input type="radio" name="side" value="LEFT" v-model="side" /></label>
+        <label><input type="radio" name="side" value="RIGHT" v-model="side" /> {{ t('side-right') }}</label>
       </div>
     </div>
-    <div class="addentry-row">
+    <h2>{{ t('position') }}</h2>
+    <label class="addentry-label-vertical"><input type="radio" name="position" value="CRADLE" v-model="position" /> {{ t('position-cradle') }}</label>
+    <label class="addentry-label-vertical"><input type="radio" name="position" value="CLUTCH" v-model="position" /> {{ t('position-clutch') }}</label>
+    <label class="addentry-label-vertical"><input type="radio" name="position" value="LYING" v-model="position" /> {{ t('position-lying') }}</label>
+    <div class="addentry-row addentry-row-actions">
       <div class="addentry-row-left">
         <input type="button" :value="t('cancel')" @click="cancel"/>
       </div>
@@ -29,7 +35,7 @@
 import { defineComponent, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { AddEntry, Side } from '../log'
+import { AddEntry, Position, Side } from '../log'
 import HourInput from './HourInput.vue'
 
 function truncatedDateTimestamp(d: Date) {
@@ -40,6 +46,7 @@ interface Data {
   start: Date
   end: Date
   side: Side | undefined
+  position: Position | undefined
 }
 
 export default defineComponent({
@@ -58,6 +65,7 @@ export default defineComponent({
       start: new Date(),
       end: new Date(),
       side: undefined,
+      position: undefined,
     } as Data
   },
   methods: {
@@ -76,6 +84,7 @@ export default defineComponent({
         startTimestamp,
         endTimestamp,
         side: this.side,
+        position: this.position,
       })
 
       this.$router.replace({ path: '/' })
@@ -92,6 +101,20 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   padding: 1rem;
+}
+
+.addentry h2 {
+  font-size: var(--font-size-base);
+  text-transform: uppercase;
+  margin: 1rem 0 .5rem 0;
+}
+
+.addentry h2:nth-child(1) {
+  margin-top: 0;
+}
+
+.addentry label {
+  text-transform: capitalize;
 }
 
 .addentry-row {
@@ -116,23 +139,33 @@ export default defineComponent({
   flex: 1 1 auto;
   text-align: center;
 }
+
+.addentry-row-actions {
+  margin-top: 2rem;
+}
+
+.addentry-label-vertical + .addentry-label-vertical {
+  margin-top: .5rem;
+}
 </style>
 
 <i18n>
 {
   "en": {
+    "time": "Time",
     "start": "Start",
     "end": "End",
-    "left": "Left",
-    "right": "Right",
+    "side": "Side",
+    "position": "Position",
     "cancel": "Cancel",
     "save": "Save"
   },
   "fr": {
+    "time": "Heure",
     "start": "Début",
     "end": "Fin",
-    "left": "Gauche",
-    "right": "Droite",
+    "side": "Côté",
+    "position": "Position",
     "cancel": "Annuler",
     "save": "Enregistrer"
   }

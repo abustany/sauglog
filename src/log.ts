@@ -6,10 +6,17 @@ export enum Side {
   RIGHT = 'RIGHT',
 }
 
+export enum Position {
+  CRADLE = 'CRADLE',
+  CLUTCH = 'CLUTCH',
+  LYING = 'LYING',
+}
+
 export interface Entry {
   startTimestamp: number;
   endTimestamp: number;
   side: Side;
+  position?: Position;
 }
 
 export type AddEntry = (e: Entry) => Promise<void>
