@@ -52,6 +52,10 @@ html {
   font-size: var(--font-size-base);
 }
 
+body {
+  overscroll-behavior-y: contain;
+}
+
 a {
   color: inherit;
   text-decoration: none;
