@@ -18,9 +18,10 @@ export default defineComponent({
     TopBar,
   },
   setup() {
-    const { addEntry, entries } = useLog()
+    const { addEntry, updateEntry, entries } = useLog()
 
     provide('addEntry', addEntry)
+    provide('updateEntry', updateEntry)
     provide('entries', entries)
 
     const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW()
@@ -49,6 +50,11 @@ html {
   color: var(--color-text);
   font-family: sans-serif;
   font-size: var(--font-size-base);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 #app {

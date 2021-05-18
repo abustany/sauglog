@@ -10,33 +10,37 @@
       {{ t('no-entries') }}
     </div>
     <template v-for="(entry, index) in listData">
-      <div class="log-entry" v-if="entry.type === 'entry'" :key="index">
-        <div class="log-entry-time">
-          <span>{{ formatTimestamp(entry.endTimestamp) }}</span>
-          <span class="log-entry-time-separator">|</span>
-          <span>{{ formatTimestamp(entry.startTimestamp) }}</span>
-        </div>
-        <div class="log-entry-data">
-          <div>
-            <span class="log-entry-data-icon"><Icon name="clock"/></span>
-            <span>
-              {{ formatDuration(entry.startTimestamp, entry.endTimestamp) }}
-            </span>
+        <router-link
+          class="log-entry"
+          v-if="entry.type === 'entry'"
+          :key="index"
+          :to="{ name: 'edit-entry', params: { id: entry.id }}"
+          >
+          <div class="log-entry-time">
+            <span>{{ formatTimestamp(entry.endTimestamp) }}</span>
+            <span class="log-entry-time-separator">|</span>
+            <span>{{ formatTimestamp(entry.startTimestamp) }}</span>
           </div>
-          <div>
-            <span class="log-entry-data-icon"><Icon name="info"/></span>
-            <span>
-              {{ formatSide(entry.side) + (entry.position ? `, ${formatPosition(entry.position)}` : '') }}
-            </span>
+          <div class="log-entry-data">
+            <div>
+              <span class="log-entry-data-icon"><Icon name="clock"/></span>
+              <span>
+                {{ formatDuration(entry.startTimestamp, entry.endTimestamp) }}
+              </span>
+            </div>
+            <div>
+              <span class="log-entry-data-icon"><Icon name="info"/></span>
+              <span>
+                {{ formatSide(entry.side) + (entry.position ? `, ${formatPosition(entry.position)}` : '') }}
+              </span>
+            </div>
           </div>
+        </router-link>
+        <div class="log-interval" v-if="entry.type === 'interval'" :key="index">
+          <div class="log-interval-spacer"></div>
+          <div class="log-interval-interval">{{ entry.interval }}</div>
+          <div class="log-interval-spacer"></div>
         </div>
-      </div>
-
-      <div class="log-interval" v-if="entry.type === 'interval'" :key="index">
-        <div class="log-interval-spacer"></div>
-        <div class="log-interval-interval">{{ entry.interval }}</div>
-        <div class="log-interval-spacer"></div>
-      </div>
     </template>
   </div>
   <router-link :to="{ name: 'add-entry' }">

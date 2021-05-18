@@ -32,17 +32,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from 'vue'
+import { defineComponent, inject, PropType, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { AddEntry, Position, Side } from '../log'
+import { AddEntry, Entry, EntryList, Key, Position, SavedEntry, Side, UpdateEntry } from '../log'
 import HourInput from './HourInput.vue'
 
 function truncatedDateTimestamp(d: Date) {
   return Math.floor(d.getTime() / 1000 / 60) * 60
 }
 
+function dateFromTimestamp(t: number): Date {
+  return new Date(t*1000)
+}
+
 interface Data {
+  loading: Boolean,
   start: Date
   end: Date
   side: Side | undefined
@@ -50,22 +55,35 @@ interface Data {
 }
 
 export default defineComponent({
-  name: 'AddEntry',
+  name: 'EditEntry',
   components: {
     HourInput
   },
-  setup() {
+  props: {
+    id: Number as PropType<Key> // optional
+  },
+  setup(props) {
     const { t } = useI18n({inheritLocale: true})
     const addEntry = inject('addEntry') as AddEntry
+    const updateEntry = inject('updateEntry') as UpdateEntry
+    let baseEntry: SavedEntry | undefined = undefined
 
-    return { t, addEntry }
+    if (props.id) {
+      const entries = inject('entries') as Ref<EntryList>
+      baseEntry = entries.value.entries.find(e => e.id === props.id)
+    }
+
+    return { t, addEntry, updateEntry, baseEntry }
   },
   data() {
+    // for some reason, Typescript thinks that this.baseEntry is a method
+    const baseEntry = this.baseEntry as unknown as (SavedEntry | undefined)
+
     return {
-      start: new Date(),
-      end: new Date(),
-      side: undefined,
-      position: undefined,
+      start: baseEntry ? dateFromTimestamp(baseEntry.startTimestamp) : new Date(),
+      end: baseEntry ? dateFromTimestamp(baseEntry.endTimestamp) : new Date(),
+      side: baseEntry?.side,
+      position: baseEntry?.position,
     } as Data
   },
   methods: {
@@ -80,12 +98,18 @@ export default defineComponent({
         startTimestamp -= 86400 // seconds, a day
       }
 
-      await this.addEntry({
+      const entry: Entry = {
         startTimestamp,
         endTimestamp,
         side: this.side,
         position: this.position,
-      })
+      }
+
+      if (this.id) {
+        await this.updateEntry(this.id, entry)
+      } else {
+        await this.addEntry(entry)
+      }
 
       this.$router.replace({ path: '/' })
     },

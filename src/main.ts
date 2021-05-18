@@ -4,14 +4,19 @@ import { createI18n } from 'vue-i18n'
 import messages from '@intlify/vite-plugin-vue-i18n/messages'
 
 import App from './App.vue'
-import AddEntry from './components/AddEntry.vue'
+import EditEntry from './components/EditEntry.vue'
 import Log from './components/Log.vue'
+import { parseKey } from './log'
 
-const log = {}
-
-const routes = [
+const routes: VueRouter.RouteRecordRaw[] = [
   { path: '/', component: Log },
-  { name: 'add-entry', path: '/add', component: AddEntry },
+  { name: 'add-entry', path: '/add', component: EditEntry },
+  {
+    name: 'edit-entry',
+    path: '/edit/:id',
+    component: EditEntry,
+    props: route => ({ id: parseKey(route.params.id as string) }),
+  },
 ]
 
 const router = VueRouter.createRouter({
@@ -27,5 +32,4 @@ const i18n = createI18n({
 createApp(App)
   .use(i18n)
   .use(router)
-  .provide('log', log)
   .mount('#app')

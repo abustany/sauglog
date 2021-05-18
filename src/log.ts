@@ -19,10 +19,14 @@ export interface Entry {
   position?: Position;
 }
 
+export type Key = number;
+export type SavedEntry = {id: Key} & Entry
+
 export type AddEntry = (e: Entry) => Promise<void>
+export type UpdateEntry = (key: Key, e: Entry) => Promise<void>
 
 export interface EntryList {
-  entries: Entry[];
+  entries: SavedEntry[];
   loading: boolean;
   error?: string;
 }
@@ -52,10 +56,10 @@ export default function useLog() {
 
     try {
       let cursor = await (await db).transaction('log').store.index('startTimestamp').openCursor(null, 'prev')
-      const res: Entry[] = []
+      const res: SavedEntry[] = []
 
       while (cursor) {
-        res.push(cursor.value)
+        res.push({id: cursor.primaryKey, ...cursor.value})
         cursor = await cursor.continue()
       }
 
@@ -70,8 +74,13 @@ export default function useLog() {
     }
   }
 
-  const addEntry: AddEntry = async (entry: Entry) => {
+  const addEntry: AddEntry = async (entry) => {
     await (await db).put('log', entry)
+    loadEntries()
+  }
+
+  const updateEntry: UpdateEntry = async (key, entry) => {
+    await (await db).put('log', entry, key)
     loadEntries()
   }
 
@@ -79,6 +88,11 @@ export default function useLog() {
 
   return {
     addEntry,
+    updateEntry,
     entries
   }
+}
+
+export function parseKey(s: string): Key | undefined {
+  return parseInt(s) || undefined
 }
