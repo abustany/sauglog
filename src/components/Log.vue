@@ -6,7 +6,7 @@
     <div class="log-empty-state" v-if="entries.loading">
       {{ t('loading') }}
     </div>
-    <div class="log-empty-state" v-if="!entries.loading && entries.entries.length === 0">
+    <div class="log-empty-state" v-if="!entries.error && !entries.loading && entries.entries.length === 0">
       {{ t('no-entries') }}
     </div>
     <template v-for="(entry, index) in listData">
