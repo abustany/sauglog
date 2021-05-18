@@ -34,6 +34,12 @@ export interface EntryList {
 const SCHEMA_VERSION = 1;
 
 async function initDB() {
+  if (navigator.storage) {
+    if (!(await navigator.storage.persisted())) {
+      await navigator.storage.persist()
+    }
+  }
+
   const db = await openDB('log', SCHEMA_VERSION, {
     upgrade(database, _oldVersion, _newVersion, _transaction) {
       const objectStore = database.createObjectStore('log', { autoIncrement: true })
