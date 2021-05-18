@@ -37,14 +37,7 @@ import { useI18n } from 'vue-i18n'
 
 import { AddEntry, Entry, EntryList, Key, Position, SavedEntry, Side, UpdateEntry } from '../log'
 import HourInput from './HourInput.vue'
-
-function truncatedDateTimestamp(d: Date) {
-  return Math.floor(d.getTime() / 1000 / 60) * 60
-}
-
-function dateFromTimestamp(t: number): Date {
-  return new Date(t*1000)
-}
+import { dateFromTimestamp, truncatedDateTimestamp } from '../timestamp'
 
 interface Data {
   loading: Boolean,

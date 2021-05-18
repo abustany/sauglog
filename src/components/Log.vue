@@ -38,7 +38,10 @@
         </router-link>
         <div class="log-interval" v-if="entry.type === 'interval'" :key="index">
           <div class="log-interval-spacer"></div>
-          <div class="log-interval-interval">{{ entry.interval }}</div>
+          <div class="log-interval-interval">
+            {{ entry.interval }}
+            <template v-if="entry.sinceLastFeed"> {{ t('since-last-feed') }}</template>
+          </div>
           <div class="log-interval-spacer"></div>
         </div>
     </template>
@@ -49,11 +52,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, Ref } from 'vue'
+import { defineComponent, inject, onMounted, onUnmounted, ref, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { formatDuration, formatTimestamp, formatSide, formatPosition } from '../format'
 import { Entry, EntryList, Position, Side } from '../log'
+import { truncatedDateTimestamp } from '../timestamp'
 
 import AddButton from './AddButton.vue'
 import Icon from './Icon.vue'
@@ -63,6 +67,7 @@ type EntryItem = Entry & { type: 'entry' }
 interface IntervalItem {
   type: 'interval'
   interval: string
+  sinceLastFeed: boolean
 }
 
 type ListItem = EntryItem | IntervalItem
@@ -76,6 +81,18 @@ export default defineComponent({
     const tFormatDuration = (start: number, end: number) => formatDuration(t, start, end)
     const tFormatSide = (side: Side) => formatSide(t, side)
     const tFormatPosition = (p: Position) => formatPosition(t, p)
+    const currentTime = ref(new Date())
+    let ticker = 0;
+
+    onMounted(() => {
+      ticker = setInterval(() => {
+        currentTime.value = new Date()
+      }, 60*1000)
+    })
+
+    onUnmounted(() => {
+      clearInterval(ticker)
+    })
 
     return {
       t,
@@ -84,6 +101,7 @@ export default defineComponent({
       formatPosition: tFormatPosition,
       formatTimestamp,
       entries,
+      currentTime,
     }
   },
   components: {
@@ -92,19 +110,20 @@ export default defineComponent({
   },
   computed: {
     listData(): ListItem[] {
-      const entries = this.entries.entries;
-      const nEntries = entries.length;
-      let items: ListItem[] = [];
+      const entries = this.entries.entries
+      const nEntries = entries.length
+      let items: ListItem[] = []
+      let lastStartTimestamp = truncatedDateTimestamp(this.currentTime)
 
       for (let i = 0; i < nEntries; ++i) {
         const entry = entries[i]
-
+        items.push({
+          type: 'interval',
+          interval: this.formatDuration(entry.endTimestamp, lastStartTimestamp),
+          sinceLastFeed: i === 0,
+        })
         items.push({ type: 'entry', ...entry })
-
-        if (i < (nEntries - 1)) {
-          const next = entries[i + 1]
-          items.push({ type: 'interval', interval: this.formatDuration(next.endTimestamp, entry.startTimestamp) })
-        }
+        lastStartTimestamp = entry.startTimestamp
       }
 
       return items
@@ -177,6 +196,10 @@ export default defineComponent({
   flex-direction: row;
 }
 
+.log-interval:nth-child(1) {
+  margin-top: 1rem;
+}
+
 .log-interval-spacer {
   flex: 1 1 auto;
 }
@@ -192,11 +215,13 @@ export default defineComponent({
 {
   "en": {
     "loading": "Loading…",
-    "no-entries": "No entries yet"
+    "no-entries": "No entries yet",
+    "since-last-feed": "since last feed"
   },
   "fr": {
     "loading": "Chargement…",
-    "no-entries": "Aucun enregistrement pour l'instant"
+    "no-entries": "Aucun enregistrement pour l'instant",
+    "since-last-feed": "depuis la dernière tétée"
   }
 }
 </i18n>
