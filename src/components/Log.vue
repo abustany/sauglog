@@ -44,6 +44,9 @@
           </div>
           <div class="log-interval-spacer"></div>
         </div>
+        <div class="log-day-separator" v-if="entry.type === 'day'" :key="index">
+          {{ d(entry.date) }}
+        </div>
     </template>
   </div>
   <router-link :to="{ name: 'add-entry' }">
@@ -57,7 +60,7 @@ import { useI18n } from 'vue-i18n'
 
 import { formatDuration, formatTimestamp, formatSide, formatPosition } from '../format'
 import { Entry, EntryList, Position, Side } from '../log'
-import { truncatedDateTimestamp } from '../timestamp'
+import { dateFromTimestamp, truncatedDateTimestamp } from '../timestamp'
 
 import AddButton from './AddButton.vue'
 import Icon from './Icon.vue'
@@ -70,12 +73,28 @@ interface IntervalItem {
   sinceLastFeed: boolean
 }
 
-type ListItem = EntryItem | IntervalItem
+interface DaySeparatorItem {
+  type: 'day'
+  date: Date
+}
+
+type ListItem = EntryItem | IntervalItem | DaySeparatorItem
+
+function getStartOfDay(d: Date): Date {
+  const res = new Date(d)
+
+  res.setMilliseconds(0)
+  res.setSeconds(0)
+  res.setMinutes(0)
+  res.setHours(0)
+
+  return res
+}
 
 export default defineComponent({
   name: 'Log',
   setup() {
-    const { t } = useI18n({inheritLocale: true})
+    const { d, t } = useI18n({inheritLocale: true})
     const entries = inject('entries') as Ref<EntryList>
 
     const tFormatDuration = (start: number, end: number) => formatDuration(t, start, end)
@@ -95,7 +114,7 @@ export default defineComponent({
     })
 
     return {
-      t,
+      d, t,
       formatDuration: tFormatDuration,
       formatSide: tFormatSide,
       formatPosition: tFormatPosition,
@@ -114,16 +133,27 @@ export default defineComponent({
       const nEntries = entries.length
       let items: ListItem[] = []
       let lastStartTimestamp = truncatedDateTimestamp(this.currentTime)
+      let lastStartOfDay = getStartOfDay(this.currentTime)
 
       for (let i = 0; i < nEntries; ++i) {
         const entry = entries[i]
+
         items.push({
           type: 'interval',
           interval: this.formatDuration(entry.endTimestamp, lastStartTimestamp),
           sinceLastFeed: i === 0,
         })
+
+        const startOfDay = getStartOfDay(dateFromTimestamp(entry.startTimestamp))
+
+        if (lastStartOfDay.getTime() !== startOfDay.getTime()) {
+          items.push({ type: 'day', date: startOfDay })
+        }
+
         items.push({ type: 'entry', ...entry })
+
         lastStartTimestamp = entry.startTimestamp
+        lastStartOfDay = startOfDay
       }
 
       return items
@@ -208,6 +238,13 @@ export default defineComponent({
   flex: 0 0 auto;
   font-size: var(--font-size-small);
   color: var(--color-bg-dark);
+}
+
+.log-day-separator {
+  font-size: var(--font-size-small);
+  color: var(--color-bg-dark);
+  font-weight: bold;
+  padding-left: .5rem;
 }
 </style>
 
