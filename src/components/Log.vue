@@ -45,7 +45,7 @@
           <div class="log-interval-spacer"></div>
         </div>
         <div class="log-day-separator" v-if="entry.type === 'day'" :key="index">
-          {{ d(entry.date) }}
+          {{ d(entry.date) }} ({{ t('feed-count', entry.feedCount) }})
         </div>
     </template>
     <router-link :to="{ name: 'add-entry' }">
@@ -76,6 +76,7 @@ interface IntervalItem {
 interface DaySeparatorItem {
   type: 'day'
   date: Date
+  feedCount: number
 }
 
 type ListItem = EntryItem | IntervalItem | DaySeparatorItem
@@ -147,13 +148,27 @@ export default defineComponent({
         const startOfDay = getStartOfDay(dateFromTimestamp(entry.startTimestamp))
 
         if (lastStartOfDay.getTime() !== startOfDay.getTime()) {
-          items.push({ type: 'day', date: startOfDay })
+          // feedCount will be populated afterwards
+          items.push({ type: 'day', date: startOfDay, feedCount: 0 })
         }
 
         items.push({ type: 'entry', ...entry })
 
         lastStartTimestamp = entry.startTimestamp
         lastStartOfDay = startOfDay
+      }
+
+      let feedCount = 0
+
+      for (let i = items.length - 1; i >= 0; i--) {
+        const item = items[i]
+
+        if (item.type === 'entry') {
+          feedCount++
+        } else if (item.type === 'day') {
+          item.feedCount = feedCount
+          feedCount = 0
+        }
       }
 
       return items
@@ -245,6 +260,7 @@ export default defineComponent({
   color: var(--color-bg-dark);
   font-weight: bold;
   padding-left: .5rem;
+  margin-top: .5rem;
 }
 </style>
 
@@ -253,12 +269,14 @@ export default defineComponent({
   "en": {
     "loading": "Loading…",
     "no-entries": "No entries yet",
-    "since-last-feed": "since last feed"
+    "since-last-feed": "since last feed",
+    "feed-count": "{n} feeding | {n} feedings"
   },
   "fr": {
     "loading": "Chargement…",
     "no-entries": "Aucun enregistrement pour l'instant",
-    "since-last-feed": "depuis la dernière tétée"
+    "since-last-feed": "depuis la dernière tétée",
+    "feed-count": "{n} tétée | {n} tétées"
   }
 }
 </i18n>
