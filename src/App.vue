@@ -2,7 +2,11 @@
   <TopBar
     :needsRefresh="needRefresh"
     :updateServiceWorker="() => { updateServiceWorker(true) }" />
-  <router-view class="app-content"></router-view>
+  <router-view class="app-content" v-slot="{ Component, route }">
+    <transition :name="route.meta.transitionName" @leave="uprootElement">
+      <component :is="Component" />
+    </transition>
+  </router-view>
 </template>
 
 <script lang="ts">
@@ -29,6 +33,22 @@ export default defineComponent({
     watchEffect(() => { if (offlineReady) console.log('App is ready to be run offline') })
 
      return { needRefresh, updateServiceWorker }
+  },
+  methods: {
+    uprootElement(el: HTMLElement) {
+      // removes an element from its container into a new layout context, so it
+      // can be animated away safely without messing the layout
+      if (el.style.position === 'absolute') {
+        return
+      }
+
+      const rect = el.getBoundingClientRect()
+      el.style.position = 'absolute'
+      el.style.top = rect.top+'px'
+      el.style.left = rect.left+'px'
+      el.style.width = rect.width+'px'
+      el.style.height = rect.height+'px'
+    }
   },
 })
 </script>
@@ -85,5 +105,29 @@ input[type='button'] {
   border-bottom: 1px solid var(--color-bg-dark);
   border-left: 0;
   cursor: pointer;
+}
+
+.slide-left-enter-active, .slide-left-leave-active {
+  transition: transform .3s ease-out;
+}
+
+.slide-left-enter-from {
+  transform: translateX(100%);
+}
+
+.slide-left-leave-to {
+  transform: translateX(-100%);
+}
+
+.slide-right-enter-active, .slide-right-leave-active {
+  transition: transform .3s ease-out;
+}
+
+.slide-right-enter-from {
+  transform: translateX(-100%);
+}
+
+.slide-right-leave-to {
+  transform: translateX(100%);
 }
 </style>

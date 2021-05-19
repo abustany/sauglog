@@ -24,6 +24,17 @@ const router = VueRouter.createRouter({
   routes,
 })
 
+router.afterEach((to, from) => {
+  if (to.path === from.path || !((from as any).href)) { // initial loading
+    to.meta.transitionName = ''
+    return
+  }
+
+  const toDepth = to.path === '/' ? 0 : to.path.split('/').length
+  const fromDepth = from.path.split('/').length
+  to.meta.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
+})
+
 const i18n = createI18n({
   locale: navigator.language,
   messages

@@ -48,10 +48,10 @@
           {{ d(entry.date) }}
         </div>
     </template>
+    <router-link :to="{ name: 'add-entry' }">
+      <AddButton class="log-addbutton" />
+    </router-link>
   </div>
-  <router-link :to="{ name: 'add-entry' }">
-    <AddButton class="log-addbutton" />
-  </router-link>
 </template>
 
 <script lang="ts">
