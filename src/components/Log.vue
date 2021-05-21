@@ -58,6 +58,7 @@
 import { defineComponent, inject, onMounted, onUnmounted, ref, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import useCurrentTime from '../currenttime'
 import { formatDuration, formatTimestamp, formatSide, formatPosition } from '../format'
 import { Entry, EntryList, Position, Side } from '../log'
 import { dateFromTimestamp, truncatedDateTimestamp } from '../timestamp'
@@ -101,18 +102,7 @@ export default defineComponent({
     const tFormatDuration = (start: number, end: number) => formatDuration(t, start, end)
     const tFormatSide = (side: Side) => formatSide(t, side)
     const tFormatPosition = (p: Position) => formatPosition(t, p)
-    const currentTime = ref(new Date())
-    let ticker = 0;
-
-    onMounted(() => {
-      ticker = setInterval(() => {
-        currentTime.value = new Date()
-      }, 60*1000)
-    })
-
-    onUnmounted(() => {
-      clearInterval(ticker)
-    })
+    const currentTime = useCurrentTime()
 
     return {
       d, t,
