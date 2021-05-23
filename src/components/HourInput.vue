@@ -1,20 +1,17 @@
 <template>
   <div class="hourinput-modal" v-if="picking">
     <div class="hourinput-modal-title">
-      <h1>{{ t(picking) }}</h1>
       <input type="button" value="×" @click="closePicker" />
     </div>
-    <div class="hourinput-modal-content">
-      <template v-for="n in pickRange" :key="n">
-        <input
-          type="button"
-          class="hourinput-modal-value"
-          :class="{ 'hourinput-modal-value-active': (n - 1) === pickedValue }"
-          :value="formatTimeNumber(n - 1)"
-          @click="pick(n - 1)"
-          />
-      </template>
+    <div class="hourinput-modal-value">
+      {{ formatTimeNumber(currentHours) }} : {{ formatTimeNumber(currentMinutes) }}
     </div>
+    <Clock
+      class="hourinput-modal-content"
+      :mode="picking"
+      v-model="currentClockValue"
+      @picked="picked"
+      />
   </div>
   <span class="hourinput-value" @click="openPicker">
     {{ formatTimeNumber(hours) }} : {{ formatTimeNumber(minutes) }}
@@ -26,12 +23,9 @@ import { defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { formatTimeNumber } from '../format'
+import Clock from './Clock.vue'
 
-type PickState = null | 'Hours' | 'Minutes'
-
-interface Data {
-  picking: PickState
-}
+type PickState = null | 'hours' | 'minutes'
 
 export default defineComponent({
   name: 'HourInput',
@@ -43,11 +37,13 @@ export default defineComponent({
   props: {
     modelValue: {type: Date, required: true}
   },
+  components: { Clock },
   emits: ['update:modelValue'],
   data() {
     return {
-      picking: null,
-    } as Data
+      picking: null as PickState,
+      currentClockValue: 0,
+    }
   },
   computed: {
     hours: {
@@ -60,6 +56,9 @@ export default defineComponent({
         this.$emit('update:modelValue', updated)
       }
     },
+    currentHours(): number {
+      return this.picking === 'hours' ? this.currentClockValue : this.hours
+    },
     minutes: {
       get(): number {
         return this.modelValue.getMinutes()
@@ -70,30 +69,25 @@ export default defineComponent({
         this.$emit('update:modelValue', updated)
       }
     },
-    pickRange(): number {
-      if (this.picking === 'Hours') return 24
-      if (this.picking === 'Minutes') return 60
-      return 0
-    },
-    pickedValue(): number {
-      if (this.picking === 'Hours') return this.hours
-      if (this.picking === 'Minutes') return this.minutes
-      return 0
+    currentMinutes(): number {
+      return this.picking === 'minutes' ? this.currentClockValue : this.minutes
     },
   },
   methods: {
     openPicker(): void {
-      this.picking = 'Hours'
+      this.currentClockValue = this.hours
+      this.picking = 'hours'
     },
     closePicker(): void {
       this.picking = null;
     },
-    pick(val: number): void {
-      if (this.picking === 'Hours') {
-        this.hours = val
-        this.picking = 'Minutes';
-      } else if (this.picking === 'Minutes') {
-        this.minutes = val
+    picked(): void {
+      if (this.picking === 'hours') {
+        this.hours = this.currentClockValue
+        this.currentClockValue = this.minutes
+        this.picking = 'minutes';
+      } else if (this.picking === 'minutes') {
+        this.minutes = this.currentClockValue
         this.picking = null;
       }
     },
@@ -119,48 +113,29 @@ export default defineComponent({
 
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .hourinput-modal-title {
   flex: 0 0 auto;
   margin-bottom: 1rem;
-
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.hourinput-modal-title > h1 {
-  flex: 1 1 auto;
-  text-align: left;
-  margin: 0;
-  font-size: var(--font-size-title);
+  text-align: right;
+  width: 100%;
 }
 
 .hourinput-modal-title > input {
-  flex: 0 0 auto;
-
   font-size: 32pt;
-}
-
-.hourinput-modal-content {
-  flex: 0 0 auto;
-
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
 }
 
 .hourinput-modal-value {
-  flex: 0 0 2em;
-  text-align: center;
-  font-size: 32pt;
-  margin-bottom: .5rem;
-  margin-right: .5rem;
+  flex: 0 0 auto;
+  font-size: var(--font-size-title);
+  margin-bottom: 1rem;
 }
 
-.hourinput-modal-value-active {
-  background-color: var(--color-accent) !important
+.hourinput-modal-content {
+  flex: 1 0 15rem;
+  width: 15rem;
 }
 </style>
 
