@@ -2,13 +2,14 @@
   <div class="top-bar">
     <div>SaugLog</div>
     <div v-if="needsRefresh" class="top-bar-update-available" role="button" @click="updateServiceWorker()">
-      <Icon name="info"/> An update is available, click this banner to refresh
+      <Icon name="info"/> {{ t('update-available') }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import Icon from './Icon.vue'
 
@@ -20,7 +21,11 @@ export default defineComponent({
   },
   components: {
     Icon
-  }
+  },
+  setup() {
+    const { t } = useI18n({inheritLocale: true})
+    return { t }
+  },
 })
 </script>
 
@@ -45,3 +50,14 @@ export default defineComponent({
   cursor: pointer;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "update-available": "An update is available, click this banner to refresh"
+  },
+  "fr": {
+    "update-available": "Une mise à jour est disponible, cliquez pour rafraîchir"
+  }
+}
+</i18n>
