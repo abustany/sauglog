@@ -28,7 +28,9 @@ export default defineComponent({
     provide('updateEntry', updateEntry)
     provide('entries', entries)
 
-    const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW()
+    const { offlineReady, needRefresh, updateServiceWorker } = import.meta.env.PROD ?
+      useRegisterSW()
+      : { offlineReady: true, needRefresh: false, updateServiceWorker: () => {}}
 
     watchEffect(() => { if (offlineReady) console.log('App is ready to be run offline') })
 
