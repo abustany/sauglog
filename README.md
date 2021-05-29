@@ -1,27 +1,37 @@
-# Vue 3 + Typescript + Vite
+# Sauglog
 
-This template should help get you started developing with Vue 3 and Typescript in Vite.
+👉 A simple, privacy-first breastfeeding logger
 
-## Recommended IDE Setup
+Sauglog is a simple mobile application to log when and how you breastfeed your
+baby. It keeps all data stored locally and does not communicate with any
+servers. There are no advertisement, no analytics. Any data you enter stays on
+your phone.
 
-[VSCode](https://code.visualstudio.com/) + [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur). Make sure to enable `vetur.experimental.templateInterpolationService` in settings!
+## 🌟 Features
 
-### If Using `<script setup>`
+<img src="https://github.com/abustany/sauglog/raw/master/doc/home.png" width="400" alt="list of feeds" />
 
-[`<script setup>`](https://github.com/vuejs/rfcs/pull/227) is a feature that is currently in RFC stage. To get proper IDE support for the syntax, use [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) instead of Vetur (and disable Vetur).
+👉 Lists when you fed your baby, and in which position.
 
-## Type Support For `.vue` Imports in TS
+<img src="https://github.com/abustany/sauglog/raw/master/doc/edit.png" width="400" alt="edit screen" />
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can use the following:
+👉 Easy input/edit of breastfeeding data
 
-### If Using Volar
+👉 Speaks your language (so far English and French, contributions welcome)
 
-Run `Volar: Switch TS Plugin on/off` from VSCode command palette.
+👉 Free, open source, ad-free
 
-### If Using Vetur
+## 🛒 Get it
 
-1. Install and add `@vuedx/typescript-plugin-vue` to the [plugins section](https://www.typescriptlang.org/tsconfig#plugins) in `tsconfig.json`
-2. Delete `src/shims-vue.d.ts` as it is no longer needed to provide module info to Typescript
-3. Open `src/main.ts` in VSCode
-4. Open the VSCode command palette
-5. Search and run "Select TypeScript version" -> "Use workspace version"
+1. Visit [Sauglog](https://sauglog.vercel.app/) in your browser
+1. Click the installation banner shown by your browser (more instructions for [Firefox](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Add_to_home_screen#how_do_you_use_it),  [Chrome](https://support.google.com/chrome/answer/9658361?co=GENIE.Platform%3DAndroid&hl=en))
+
+## 💪 Contribute
+
+Pull requests are welcome. This is a standard Vite/Vue/Typescript project, use
+`yarn dev` to start the development server. A minimal suite of E2E tests is
+maintained in the `cypress/` folder.
+
+The code was more cobbled together than properly engineered, expect quirks here
+and there. It uses a random mix of Vue's options and composition API, I guess
+the latter should be favoured in new code.
