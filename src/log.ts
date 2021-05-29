@@ -58,6 +58,7 @@ export default function useLog() {
   const loadEntries = async () => {
     console.log('Reloading log entries')
 
+    entries.value.entries = []
     entries.value.loading = true
 
     try {
