@@ -29,9 +29,11 @@
               </span>
             </div>
             <div>
-              <span class="log-entry-data-icon"><Icon name="info"/></span>
+              <span class="log-entry-data-icon"></span>
               <span>
-                {{ formatSide(entry.side) + (entry.position ? `, ${formatPosition(entry.position)}` : '') }}
+                <Icon name="arrow-left" v-if="entry.side === LEFT"/>
+                {{ (entry.position ? formatPosition(entry.position) : formatSide(entry.side)) }}
+                <Icon name="arrow-right" v-if="entry.side === RIGHT"/>
               </span>
             </div>
           </div>
@@ -55,7 +57,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, onMounted, onUnmounted, ref, Ref } from 'vue'
+import { defineComponent, inject, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useCurrentTime from '../currenttime'
@@ -112,6 +114,8 @@ export default defineComponent({
       formatTimestamp,
       entries,
       currentTime,
+      LEFT: Side.LEFT,
+      RIGHT: Side.RIGHT,
     }
   },
   components: {
@@ -224,6 +228,7 @@ export default defineComponent({
 
 .log-entry-data-icon {
   margin-right: .25rem;
+  width: 1rem;
 }
 
 .log-interval {
