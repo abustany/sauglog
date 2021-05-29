@@ -1,5 +1,5 @@
 <template>
-    <svg class="icon"><use :xlink:href="iconsUrl + '#icon-' + name"></use></svg>
+    <svg class="icon" :aria-label="name"><use :xlink:href="iconsUrl + '#icon-' + name"></use></svg>
 </template>
 
 <script lang="ts">
