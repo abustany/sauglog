@@ -97,7 +97,7 @@ a {
   overflow: auto;
 }
 
-input[type='button'] {
+input[type='button'], button {
   font-size: var(--font-size-base);
   background-color: transparent;
   border-top: 0;

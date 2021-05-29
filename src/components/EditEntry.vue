@@ -3,11 +3,11 @@
     <h2>{{ t('time') }}</h2>
     <div class="addentry-row">
       <div class="addentry-row-left">{{ t('start') }}:</div>
-      <div class="addentry-row-right"><HourInput v-model="start" /></div>
+      <div class="addentry-row-right"><HourInput v-model="start" :name="t('start')" /></div>
     </div>
     <div class="addentry-row">
       <div class="addentry-row-left">{{ t('end') }}:</div>
-      <div class="addentry-row-right"><HourInput v-model="end" /></div>
+      <div class="addentry-row-right"><HourInput v-model="end" :name="t('end')" /></div>
     </div>
     <h2>{{ t('side') }}</h2>
     <div class="addentry-row">
@@ -22,10 +22,10 @@
     <label class="addentry-label-vertical"><input type="radio" name="position" value="LYING" v-model="position" /> {{ t('position-lying') }}</label>
     <div class="addentry-row addentry-row-actions">
       <div class="addentry-row-left">
-        <input type="button" :value="t('cancel')" @click="cancel"/>
+        <button @click="cancel">{{ t('cancel') }}</button>
       </div>
       <div class="addentry-row-right">
-        <input type="button" :value="t('save')" @click="save"/>
+        <button @click="save">{{ t('save') }}</button>
       </div>
     </div>
   </div>

@@ -7,19 +7,17 @@
       :class="{ 'clock-value-active': (n - 1) === modelValue }"
       :style="position(size, n - 1, valueRange, nRows, skip)"
     ></div>
-    <input
+    <button
       v-for="n in valueRange"
       :key="'button-' + n"
 
-      type="button"
-      :value="n - 1"
       class="clock-value-button"
       :style="position(size, n - 1, valueRange, nRows, skip)"
       @mousedown="startPick"
       @touchstart="startPick"
       @mousemove="pick"
       @touchmove="pick"
-      />
+      >{{ n - 1}}</button>
   </div>
 </template>
 

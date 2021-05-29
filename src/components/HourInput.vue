@@ -1,7 +1,7 @@
 <template>
   <div class="hourinput-modal" v-if="picking">
     <div class="hourinput-modal-title">
-      <input type="button" value="×" @click="closePicker" />
+      <button name="Close" @click="closePicker">×</button>
     </div>
     <div class="hourinput-modal-value">
       {{ formatTimeNumber(currentHours) }} : {{ formatTimeNumber(currentMinutes) }}
@@ -13,9 +13,9 @@
       @picked="picked"
       />
   </div>
-  <span class="hourinput-value" @click="openPicker">
+  <button :name="name" class="hourinput-value" @click="openPicker">
     {{ formatTimeNumber(hours) }} : {{ formatTimeNumber(minutes) }}
-  </span>
+  </button>
 </template>
 
 <script lang="ts">
@@ -35,6 +35,7 @@ export default defineComponent({
     return { t }
   },
   props: {
+    name: {type: String},
     modelValue: {type: Date, required: true}
   },
   components: { Clock },
@@ -123,7 +124,7 @@ export default defineComponent({
   width: 100%;
 }
 
-.hourinput-modal-title > input {
+.hourinput-modal-title > button {
   font-size: 32pt;
 }
 
