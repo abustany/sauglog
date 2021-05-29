@@ -84,11 +84,17 @@ export default defineComponent({
       if (!this.side || !this.start || !this.end) return
 
       let startTimestamp = truncatedDateTimestamp(this.start)
-      const endTimestamp = truncatedDateTimestamp(this.end)
+      let endTimestamp = truncatedDateTimestamp(this.end)
+      const nowTimestamp = truncatedDateTimestamp(new Date())
 
-      if (endTimestamp < startTimestamp) {
-        // if the end hour is before the start hour, it's because it was a day earlier
-        startTimestamp -= 86400 // seconds, a day
+      const SECONDS_IN_A_DAY = 86400
+
+      if (endTimestamp > nowTimestamp) {
+        endTimestamp -= SECONDS_IN_A_DAY
+      }
+
+      while (startTimestamp > endTimestamp) {
+        startTimestamp -= SECONDS_IN_A_DAY
       }
 
       const entry: Entry = {
