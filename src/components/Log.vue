@@ -51,7 +51,7 @@
         </div>
     </template>
     <router-link :to="{ name: 'add-entry' }">
-      <AddButton class="log-addbutton" />
+      <AddButton class="log-addbutton" :title="t('add-new-entry')" />
     </router-link>
   </div>
 </template>
@@ -265,13 +265,15 @@ export default defineComponent({
     "loading": "Loading…",
     "no-entries": "No entries yet",
     "since-last-feed": "since last feed",
-    "feed-count": "{n} feeding | {n} feedings"
+    "feed-count": "{n} feeding | {n} feedings",
+    "add-new-entry": "Add a new entry"
   },
   "fr": {
     "loading": "Chargement…",
     "no-entries": "Aucun enregistrement pour l'instant",
     "since-last-feed": "depuis la dernière tétée",
-    "feed-count": "{n} tétée | {n} tétées"
+    "feed-count": "{n} tétée | {n} tétées",
+    "add-new-entry": "Ajouter une nouvelle entrée"
   }
 }
 </i18n>
