@@ -8,7 +8,7 @@ export default function useCurrentTime(): Ref<Date> {
     if (intervalID) { return }
 
     currentTime.value = new Date()
-    intervalID = setInterval(() => { currentTime.value = new Date() }, 60*1000)
+    intervalID = setInterval(() => { currentTime.value = new Date() }, 5*1000)
   }
 
   const stopTicker = () => {
