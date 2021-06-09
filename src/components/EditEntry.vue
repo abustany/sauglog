@@ -3,11 +3,17 @@
     <h2>{{ t('time') }}</h2>
     <div class="addentry-row">
       <div>{{ t('start') }}:</div>
-      <div class="addentry-row-grow addentry-row-right"><HourInput v-model="start" :name="t('start')" /></div>
+      <div class="addentry-row-grow addentry-row-right">
+        <template v-if="startDayOffset">{{ t('days-ago', -startDayOffset) }}, </template>
+        <HourInput v-model="start" :name="t('start')" />
+      </div>
     </div>
     <div class="addentry-row">
       <div>{{ t('end') }}:</div>
-      <div class="addentry-row-grow addentry-row-right"><HourInput v-model="end" :name="t('end')" /></div>
+      <div class="addentry-row-grow addentry-row-right">
+        <template v-if="endDayOffset">{{ t('days-ago', -endDayOffset) }}, </template>
+        <HourInput v-model="end" :name="t('end')" />
+      </div>
     </div>
     <h2>{{ t('side') }}</h2>
     <div class="addentry-row">
@@ -37,6 +43,7 @@ import { AddEntry, Entry, EntryList, Key, Position, SavedEntry, Side, UpdateEntr
 import HourInput from './HourInput.vue'
 import Icon from './Icon.vue'
 import { dateFromTimestamp, truncatedDateTimestamp } from '../timestamp'
+import useCurrentTime from '../currenttime'
 
 interface Data {
   loading: Boolean,
@@ -44,6 +51,12 @@ interface Data {
   end: Date
   side: Side | undefined
   position: Position | undefined
+}
+
+const MS_IN_A_DAY = 86400 * 1000
+
+function dayOffset(d1: Date, d2: Date): number {
+  return Math.floor(d1.getTime() / MS_IN_A_DAY) - Math.floor(d2.getTime() / MS_IN_A_DAY)
 }
 
 export default defineComponent({
@@ -66,7 +79,9 @@ export default defineComponent({
       baseEntry = entries.value.entries.find(e => e.id === props.id)
     }
 
-    return { t, addEntry, updateEntry, baseEntry }
+    const currentTime = useCurrentTime()
+
+    return { t, addEntry, updateEntry, baseEntry, currentTime }
   },
   data() {
     // for some reason, Typescript thinks that this.baseEntry is a method
@@ -79,23 +94,41 @@ export default defineComponent({
       position: baseEntry?.position,
     } as Data
   },
+  computed: {
+    reframedEnd(): Date {
+      const currentTime = this.currentTime.getTime()
+      let endTime = this.end.getTime()
+
+      while (endTime > currentTime) {
+        endTime -= MS_IN_A_DAY
+      }
+
+      return new Date(endTime)
+    },
+    endDayOffset(): number {
+      return dayOffset(this.reframedEnd, this.currentTime)
+    },
+    reframedStart(): Date {
+      let reframedEndTime = this.reframedEnd.getTime()
+      let startTime = this.start.getTime()
+
+      while (reframedEndTime < startTime) {
+        startTime -= MS_IN_A_DAY
+      }
+
+      return new Date(startTime)
+    },
+    startDayOffset(): number {
+      return dayOffset(this.reframedStart, this.currentTime)
+    },
+  },
   methods: {
     async save() {
       if (!this.side || !this.start || !this.end) return
 
-      let startTimestamp = truncatedDateTimestamp(this.start)
-      let endTimestamp = truncatedDateTimestamp(this.end)
+      let startTimestamp = truncatedDateTimestamp(this.reframedStart)
+      let endTimestamp = truncatedDateTimestamp(this.reframedEnd)
       const nowTimestamp = truncatedDateTimestamp(new Date())
-
-      const SECONDS_IN_A_DAY = 86400
-
-      if (endTimestamp > nowTimestamp) {
-        endTimestamp -= SECONDS_IN_A_DAY
-      }
-
-      while (startTimestamp > endTimestamp) {
-        startTimestamp -= SECONDS_IN_A_DAY
-      }
 
       const entry: Entry = {
         startTimestamp,
@@ -183,7 +216,8 @@ export default defineComponent({
     "side": "Side",
     "position": "Position",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "days-ago": "Yesterday | {n} days ago"
   },
   "fr": {
     "time": "Heure",
@@ -192,7 +226,8 @@ export default defineComponent({
     "side": "Côté",
     "position": "Position",
     "cancel": "Annuler",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "days-ago": "Hier | il y a {n} jours"
   }
 }
 </i18n>
