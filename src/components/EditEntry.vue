@@ -2,29 +2,27 @@
   <div class="addentry">
     <h2>{{ t('time') }}</h2>
     <div class="addentry-row">
-      <div class="addentry-row-left">{{ t('start') }}:</div>
-      <div class="addentry-row-right"><HourInput v-model="start" :name="t('start')" /></div>
+      <div>{{ t('start') }}:</div>
+      <div class="addentry-row-grow addentry-row-right"><HourInput v-model="start" :name="t('start')" /></div>
     </div>
     <div class="addentry-row">
-      <div class="addentry-row-left">{{ t('end') }}:</div>
-      <div class="addentry-row-right"><HourInput v-model="end" :name="t('end')" /></div>
+      <div>{{ t('end') }}:</div>
+      <div class="addentry-row-grow addentry-row-right"><HourInput v-model="end" :name="t('end')" /></div>
     </div>
     <h2>{{ t('side') }}</h2>
     <div class="addentry-row">
-      <div class="addentry-row-center">
-        <label>{{ t('side-left') }} <input type="radio" name="side" value="LEFT" v-model="side" /></label>
-        <label><input type="radio" name="side" value="RIGHT" v-model="side" /> {{ t('side-right') }}</label>
-      </div>
+      <label class="addentry-row-half addentry-row-right"><Icon name="arrow-left"/>{{ t('side-left') }} <input type="radio" name="side" value="LEFT" v-model="side" /></label>
+      <label class="addentry-row-half"><input type="radio" name="side" value="RIGHT" v-model="side" /> {{ t('side-right') }}<Icon name="arrow-right"/></label>
     </div>
     <h2>{{ t('position') }}</h2>
     <label class="addentry-label-vertical"><input type="radio" name="position" value="CRADLE" v-model="position" /> {{ t('position-cradle') }}</label>
     <label class="addentry-label-vertical"><input type="radio" name="position" value="CLUTCH" v-model="position" /> {{ t('position-clutch') }}</label>
     <label class="addentry-label-vertical"><input type="radio" name="position" value="LYING" v-model="position" /> {{ t('position-lying') }}</label>
     <div class="addentry-row addentry-row-actions">
-      <div class="addentry-row-left">
+      <div class="addentry-row-half">
         <button @click="cancel">{{ t('cancel') }}</button>
       </div>
-      <div class="addentry-row-right">
+      <div class="addentry-row-half addentry-row-right">
         <button @click="save">{{ t('save') }}</button>
       </div>
     </div>
@@ -37,6 +35,7 @@ import { useI18n } from 'vue-i18n'
 
 import { AddEntry, Entry, EntryList, Key, Position, SavedEntry, Side, UpdateEntry } from '../log'
 import HourInput from './HourInput.vue'
+import Icon from './Icon.vue'
 import { dateFromTimestamp, truncatedDateTimestamp } from '../timestamp'
 
 interface Data {
@@ -50,7 +49,8 @@ interface Data {
 export default defineComponent({
   name: 'EditEntry',
   components: {
-    HourInput
+    HourInput,
+    Icon,
   },
   props: {
     id: Number as PropType<Key> // optional
@@ -149,18 +149,20 @@ export default defineComponent({
   margin-bottom: .5rem;
 }
 
-.addentry-row-left {
+.addentry-row > div {
   flex: 0 0 auto;
 }
 
+.addentry-row-grow {
+  flex: 1 1 auto !important;
+}
+
 .addentry-row-right {
-  flex: 1 1 auto;
   text-align: right;
 }
 
-.addentry-row-center {
-  flex: 1 1 auto;
-  text-align: center;
+.addentry-row-half {
+  flex: 1 1 50% !important;
 }
 
 .addentry-row-actions {
