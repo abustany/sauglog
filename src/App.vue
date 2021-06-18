@@ -22,10 +22,11 @@ export default defineComponent({
     TopBar,
   },
   setup() {
-    const { addEntry, updateEntry, entries } = useLog()
+    const { addEntry, updateEntry, deleteEntry, entries } = useLog()
 
     provide('addEntry', addEntry)
     provide('updateEntry', updateEntry)
+    provide('deleteEntry', deleteEntry)
     provide('entries', entries)
 
     const { offlineReady, needRefresh, updateServiceWorker } = import.meta.env.PROD ?

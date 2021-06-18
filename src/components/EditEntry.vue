@@ -32,6 +32,12 @@
         <button @click="save">{{ t('save') }}</button>
       </div>
     </div>
+    <div class="addentry-row" v-if="id">
+      <div>
+        <button @click="onDelete" class="addentry-delete">{{ this.confirmDelete ? t('really-delete') : t('delete') }}</button>
+      </div>
+      <div class="addentry-row-half"></div>
+    </div>
   </div>
 </template>
 
@@ -39,7 +45,7 @@
 import { defineComponent, inject, PropType, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { AddEntry, Entry, EntryList, Key, Position, SavedEntry, Side, UpdateEntry } from '../log'
+import { AddEntry, Entry, EntryList, Key, Position, SavedEntry, Side, UpdateEntry, DeleteEntry } from '../log'
 import HourInput from './HourInput.vue'
 import Icon from './Icon.vue'
 import { dateFromTimestamp, truncatedDateTimestamp } from '../timestamp'
@@ -51,6 +57,7 @@ interface Data {
   end: Date
   side: Side | undefined
   position: Position | undefined
+  confirmDelete: boolean
 }
 
 const MS_IN_A_DAY = 86400 * 1000
@@ -72,6 +79,7 @@ export default defineComponent({
     const { t } = useI18n({inheritLocale: true})
     const addEntry = inject('addEntry') as AddEntry
     const updateEntry = inject('updateEntry') as UpdateEntry
+    const deleteEntry = inject('deleteEntry') as DeleteEntry
     let baseEntry: SavedEntry | undefined = undefined
 
     if (props.id) {
@@ -81,7 +89,7 @@ export default defineComponent({
 
     const currentTime = useCurrentTime()
 
-    return { t, addEntry, updateEntry, baseEntry, currentTime }
+    return { t, addEntry, updateEntry, deleteEntry, baseEntry, currentTime }
   },
   data() {
     // for some reason, Typescript thinks that this.baseEntry is a method
@@ -92,6 +100,7 @@ export default defineComponent({
       end: baseEntry ? dateFromTimestamp(baseEntry.endTimestamp) : new Date(),
       side: baseEntry?.side,
       position: baseEntry?.position,
+      confirmDelete: false,
     } as Data
   },
   computed: {
@@ -147,7 +156,17 @@ export default defineComponent({
     },
     cancel() {
       this.$router.replace({ path: '/' })
-    }
+    },
+    async onDelete() {
+      if (!this.confirmDelete) {
+        this.confirmDelete = true
+        return
+      }
+
+      await this.deleteEntry(this.id!)
+
+      this.$router.replace({ path: '/' })
+    },
   }
 })
 </script>
@@ -205,6 +224,10 @@ export default defineComponent({
 .addentry-label-vertical + .addentry-label-vertical {
   margin-top: .5rem;
 }
+
+button.addentry-delete {
+  color: #a00;
+}
 </style>
 
 <i18n>
@@ -217,7 +240,9 @@ export default defineComponent({
     "position": "Position",
     "cancel": "Cancel",
     "save": "Save",
-    "days-ago": "Yesterday | {n} days ago"
+    "days-ago": "Yesterday | {n} days ago",
+    "delete": "Delete",
+    "really-delete": "Really delete?"
   },
   "fr": {
     "time": "Heure",
@@ -227,7 +252,9 @@ export default defineComponent({
     "position": "Position",
     "cancel": "Annuler",
     "save": "Enregistrer",
-    "days-ago": "Hier | il y a {n} jours"
+    "days-ago": "Hier | il y a {n} jours",
+    "delete": "Supprimer",
+    "really-delete": "Supprimer vraiment ?"
   }
 }
 </i18n>

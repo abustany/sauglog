@@ -24,6 +24,7 @@ export type SavedEntry = {id: Key} & Entry
 
 export type AddEntry = (e: Entry) => Promise<void>
 export type UpdateEntry = (key: Key, e: Entry) => Promise<void>
+export type DeleteEntry = (key: Key) => Promise<void>
 
 export interface EntryList {
   entries: SavedEntry[];
@@ -91,11 +92,17 @@ export default function useLog() {
     loadEntries()
   }
 
+  const deleteEntry: DeleteEntry = async (key) => {
+    await (await db).delete('log', key)
+    loadEntries()
+  }
+
   onMounted(loadEntries)
 
   return {
     addEntry,
     updateEntry,
+    deleteEntry,
     entries
   }
 }
