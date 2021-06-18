@@ -67,6 +67,19 @@ describe('Entry CRUD', () => {
     cy.contains('Save').click()
     checkEntry(startHours, startMinutes, endHours, endMinutes, 'right', 'cradle')
   })
+
+  it('deletes the entry', () => {
+    cy.get('a.log-entry').click()
+
+    cy.location().should((loc) => {
+      expect(loc.pathname).to.equal('/edit/1')
+    })
+
+    cy.contains('Delete').click()
+    cy.contains('Really delete?').click()
+
+    cy.contains('No entries yet')
+  })
 })
 
 function checkEntry(
