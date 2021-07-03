@@ -63,7 +63,7 @@ import { useI18n } from 'vue-i18n'
 import useCurrentTime from '../currenttime'
 import { formatDuration, formatTimestamp, formatSide, formatPosition } from '../format'
 import { Entry, EntryList, Position, Side } from '../log'
-import { dateFromTimestamp, truncatedDateTimestamp } from '../timestamp'
+import { dateFromTimestamp } from '../timestamp'
 
 import AddButton from './AddButton.vue'
 import Icon from './Icon.vue'
@@ -127,7 +127,7 @@ export default defineComponent({
       const entries = this.entries.entries
       const nEntries = entries.length
       let items: ListItem[] = []
-      let lastStartTimestamp = truncatedDateTimestamp(this.currentTime)
+      let lastStartTimestamp = this.currentTime.getTime() / 1000
       let lastStartOfDay = getStartOfDay(this.currentTime)
 
       for (let i = 0; i < nEntries; ++i) {

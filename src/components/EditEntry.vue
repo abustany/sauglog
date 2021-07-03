@@ -48,7 +48,7 @@ import { useI18n } from 'vue-i18n'
 import { AddEntry, Entry, EntryList, Key, Position, SavedEntry, Side, UpdateEntry, DeleteEntry } from '../log'
 import HourInput from './HourInput.vue'
 import Icon from './Icon.vue'
-import { dateFromTimestamp, truncatedDateTimestamp } from '../timestamp'
+import { dateFromTimestamp, minuteAlignedDateTime } from '../timestamp'
 import useCurrentTime from '../currenttime'
 
 interface Data {
@@ -105,10 +105,12 @@ export default defineComponent({
   },
   computed: {
     reframedEnd(): Date {
-      const currentTime = this.currentTime.getTime()
-      let endTime = this.end.getTime()
+      const currentTime = minuteAlignedDateTime(this.currentTime)
+      let endTime = minuteAlignedDateTime(this.end)
 
-      while (endTime > currentTime) {
+      // assume that an end time further than one hour in the future means the
+      // same time one day before
+      while (endTime > (currentTime + 3600*1000)) {
         endTime -= MS_IN_A_DAY
       }
 
@@ -118,8 +120,8 @@ export default defineComponent({
       return dayOffset(this.reframedEnd, this.currentTime)
     },
     reframedStart(): Date {
-      let reframedEndTime = this.reframedEnd.getTime()
-      let startTime = this.start.getTime()
+      let reframedEndTime = this.reframedEnd.getTime() // already minute aligned
+      let startTime = minuteAlignedDateTime(this.start)
 
       while (reframedEndTime < startTime) {
         startTime -= MS_IN_A_DAY
@@ -135,13 +137,9 @@ export default defineComponent({
     async save() {
       if (!this.side || !this.start || !this.end) return
 
-      let startTimestamp = truncatedDateTimestamp(this.reframedStart)
-      let endTimestamp = truncatedDateTimestamp(this.reframedEnd)
-      const nowTimestamp = truncatedDateTimestamp(new Date())
-
       const entry: Entry = {
-        startTimestamp,
-        endTimestamp,
+        startTimestamp: this.reframedStart.getTime() / 1000,
+        endTimestamp: this.reframedEnd.getTime() / 1000,
         side: this.side,
         position: this.position,
       }

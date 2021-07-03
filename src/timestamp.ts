@@ -1,5 +1,6 @@
-export function truncatedDateTimestamp(d: Date) {
-  return Math.floor(d.getTime() / 1000 / 60) * 60
+export function minuteAlignedDateTime(d: Date): number {
+  const MINUTE_MS = 60 * 1000;
+  return Math.floor(d.getTime() / MINUTE_MS) * MINUTE_MS
 }
 
 export function dateFromTimestamp(t: number): Date {
