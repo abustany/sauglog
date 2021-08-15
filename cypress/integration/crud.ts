@@ -9,11 +9,7 @@ describe('Entry CRUD', () => {
   })
 
   it ('opens the add dialog', () => {
-    cy.visit('/')
-    cy.get('[title="Add a new entry"]').click()
-    cy.location().should((loc) => {
-      expect(loc.pathname).to.equal('/add')
-    })
+    openAddEntry()
   })
 
   const startHours = 15, startMinutes = 27, endHours = 16, endMinutes = 38
@@ -27,9 +23,8 @@ describe('Entry CRUD', () => {
   })
 
   it('sets the other properties', () => {
-    // not really black box, but I can't find anything better :-/
-    cy.get('[type="radio"][name="side"]').check('RIGHT')
-    cy.get('[type="radio"][name="position"]').check('CLUTCH')
+    pickSide('RIGHT')
+    pickPosition('CLUTCH')
   })
 
   it('saves the entry', () => {
@@ -63,7 +58,7 @@ describe('Entry CRUD', () => {
       expect(loc.pathname).to.equal('/edit/1')
     })
 
-    cy.get('[type="radio"][name="position"]').check('CRADLE')
+    pickPosition('CRADLE')
     cy.contains('Save').click()
     checkEntry(startHours, startMinutes, endHours, endMinutes, 'right', 'cradle')
   })
@@ -80,7 +75,44 @@ describe('Entry CRUD', () => {
 
     cy.contains('No entries yet')
   })
+
+  it('allows picking current time', () => {
+    openAddEntry()
+    pickTime('Start', 1, 0)
+
+    const now = new Date()
+    cy.get(`button[name="End"]`).then((button) => {
+      cy.wrap(button).click()
+      cy.contains('Now').click()
+      cy.wrap(button).contains(`${padNumber(now.getHours())} : ${padNumber(now.getMinutes())}`)
+    })
+
+    pickSide('LEFT')
+    pickPosition('CRADLE')
+    cy.contains('Save').click()
+    checkEntry(1, 0, now.getHours(), now.getMinutes(), 'left', 'cradle')
+  })
 })
+
+function openAddEntry(): void {
+  cy.get('[title="Add a new entry"]').click()
+  cy.location().should((loc) => {
+    expect(loc.pathname).to.equal('/add')
+  })
+}
+
+function pickSide(side: 'LEFT' | 'RIGHT'): void {
+  cy.get('[type="radio"][name="side"]').check(side)
+}
+
+function pickPosition(position: 'CRADLE' | 'CLUTCH' | 'LYING'): void {
+  cy.get('[type="radio"][name="position"]').check(position)
+}
+
+function padNumber(n: number): string {
+  const s = '' + n
+  return s.length === 2 ? s : '0' + s
+}
 
 function checkEntry(
   startHours: number,
@@ -91,8 +123,8 @@ function checkEntry(
   position: string,
 ): void {
   cy.get('a.log-entry').within(() => {
-    cy.contains(`${startHours}:${startMinutes}`)
-    cy.contains(`${endHours}:${endMinutes}`)
+    cy.contains(`${padNumber(startHours)}:${padNumber(startMinutes)}`)
+    cy.contains(`${padNumber(endHours)}:${padNumber(endMinutes) }`)
     cy.contains(formatDuration(endHours - startHours, endMinutes - startMinutes))
     cy.contains(position)
     cy.get(`[aria-label="arrow-${side}"]`)
@@ -107,7 +139,7 @@ function pickTime(buttonName: string, hours: number, minutes: number) {
     // gets clicked (the value is computed from the pointer position)
     cy.get('button').contains('' + hours).click({force: true})
     cy.get('button').contains('' + minutes).click({force: true})
-    cy.wrap(button).contains(`${hours} : ${minutes}`)
+    cy.wrap(button).contains(`${padNumber(hours)} : ${padNumber(minutes)}`)
   })
 }
 

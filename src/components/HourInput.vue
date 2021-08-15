@@ -7,11 +7,12 @@
       {{ formatTimeNumber(currentHours) }} : {{ formatTimeNumber(currentMinutes) }}
     </div>
     <Clock
-      class="hourinput-modal-content"
+      class="hourinput-modal-clock"
       :mode="picking"
       v-model="currentClockValue"
       @picked="picked"
       />
+    <button class="hourinput-modal-now" name="now" @click="pickNow">{{ t('Now') }}</button>
   </div>
   <button :name="name" class="hourinput-value" @click="openPicker">
     {{ formatTimeNumber(hours) }} : {{ formatTimeNumber(minutes) }}
@@ -80,7 +81,7 @@ export default defineComponent({
       this.picking = 'hours'
     },
     closePicker(): void {
-      this.picking = null;
+      this.picking = null
     },
     picked(): void {
       if (this.picking === 'hours') {
@@ -89,10 +90,14 @@ export default defineComponent({
         this.picking = 'minutes';
       } else if (this.picking === 'minutes') {
         this.minutes = this.currentClockValue
-        this.picking = null;
+        this.closePicker()
       }
     },
     formatTimeNumber,
+    pickNow(): void {
+      this.$emit('update:modelValue', new Date())
+      this.closePicker()
+    },
   }
 })
 </script>
@@ -136,9 +141,14 @@ export default defineComponent({
   margin-bottom: 1rem;
 }
 
-.hourinput-modal-content {
-  flex: 1 0 15rem;
+.hourinput-modal-clock {
+  flex: 0 0 15rem;
   width: 15rem;
+  margin-bottom: 1rem;
+}
+
+.hourinput-modal-now {
+  flex: 0 0 auto;
 }
 </style>
 
@@ -146,11 +156,13 @@ export default defineComponent({
 {
   "en": {
     "Hours": "Hours",
-    "Minutes": "Minutes"
+    "Minutes": "Minutes",
+    "Now": "Now",
   },
   "fr": {
     "Hours": "Heure",
-    "Minutes": "Minute"
+    "Minutes": "Minute",
+    "Now": "Maintenant",
   }
 }
 </i18n>
