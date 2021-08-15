@@ -2,20 +2,12 @@
     <svg class="icon" :aria-label="name"><use :xlink:href="iconsUrl + '#icon-' + name"></use></svg>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-
+<script setup lang="ts">
 import iconsUrl from '../assets/icons.svg'
 
-export default defineComponent({
-  name: 'Icon',
-  setup() {
-    return { iconsUrl }
-  },
-  props: {
-      name: {type: String, required: true},
-  }
-})
+const props = defineProps<{
+  name: string
+}>()
 </script>
 
 <style>
